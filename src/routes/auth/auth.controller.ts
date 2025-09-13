@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { plainToInstance } from 'class-transformer'
 import { LoginBodyDto, RegisterBodyDto } from 'src/routes/auth/auth.dto'
 import { AuthService } from 'src/routes/auth/auth.service'
@@ -26,6 +26,17 @@ export class AuthController {
       refreshToken,
       user: plainToInstance(UserEntity, user),
       message: 'Đăng nhập thành công',
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh-token')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    const { accessToken, refreshToken: newRefreshToken } = await this.authService.refreshToken(refreshToken)
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+      message: 'Làm mới token thành công',
     }
   }
 }

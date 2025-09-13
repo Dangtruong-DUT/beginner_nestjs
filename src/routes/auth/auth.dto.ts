@@ -1,7 +1,6 @@
-import { Exclude } from 'class-transformer'
 import { IsEmail, IsString } from 'class-validator'
 import { UserEntity } from 'src/routes/auth/entities/user.entity'
-
+import { OmitType } from '@nestjs/mapped-types'
 export class LoginBodyDto {
   @IsEmail()
   email: string
@@ -21,3 +20,10 @@ export class LoginResDto {
   refreshToken: string
   user: UserEntity
 }
+
+export class RefreshTokenBodyDto {
+  @IsString()
+  refreshToken: string
+}
+
+export class RefreshTokenResDto extends OmitType(LoginResDto, ['user'] as const) {}

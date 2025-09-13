@@ -6,7 +6,7 @@ import { JwtPayload } from 'src/shared/types/jwt.type'
 @Injectable()
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
-  signAccessToken(payload: { userId: number }) {
+  signAccessToken(payload: { userId: string }) {
     return this.jwtService.signAsync(payload, {
       expiresIn: envConfig.ACCESS_TOKEN_EXPIRES_IN,
       secret: envConfig.ACCESS_TOKEN_SECRET,
@@ -14,7 +14,7 @@ export class TokenService {
     })
   }
 
-  signRefreshToken(payload: { userId: number }) {
+  signRefreshToken(payload: { userId: string }) {
     return this.jwtService.signAsync(payload, {
       expiresIn: envConfig.REFRESH_TOKEN_EXPIRES_IN,
       secret: envConfig.REFRESH_TOKEN_SECRET,
