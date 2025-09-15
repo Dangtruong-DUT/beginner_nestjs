@@ -1,9 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { PostService } from 'src/routes/post/post.service'
+import { AuthGuardCondition, AuthGuardType } from 'src/shared/constants/auth.constant'
+import { Auth } from 'src/shared/decorators/auth.decorator'
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
+
+  @Auth({ AuthConditions: AuthGuardCondition.And, AuthTypes: [AuthGuardType.ApiKey, AuthGuardType.Bearer] })
   @Get()
   getAllPost() {
     return this.postService.getAllPost()

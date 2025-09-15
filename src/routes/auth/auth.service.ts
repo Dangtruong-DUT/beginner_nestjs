@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { LoginBodyDto, LoginResDto, RefreshTokenResDto, RegisterBodyDto } from 'src/routes/auth/auth.dto'
+import { isRecordNotFoundPrismaError, isUniqueConstraintFailedPrismaError } from 'src/shared/helpers'
 import { HashingService } from 'src/shared/services/hashing.service'
 import { PrismaService } from 'src/shared/services/prisma.service'
 import { TokenService } from 'src/shared/services/token.service'
@@ -25,7 +26,7 @@ export class AuthService {
       })
       return user
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code == 'P2002') {
+      if (isUniqueConstraintFailedPrismaError(error)) {
         const prismaError = error as Prisma.PrismaClientKnownRequestError & { meta?: { target?: string[] } }
         const errorRes = {
           field: prismaError.meta?.target?.[0] || 'unknown',
@@ -96,7 +97,7 @@ export class AuthService {
 
       return { accessToken, refreshToken }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      if (isRecordNotFoundPrismaError(error)) {
         throw new UnauthorizedException('Refresh token đã bị thu hồi')
       }
       throw new UnauthorizedException('Refresh token không hợp lệ')
