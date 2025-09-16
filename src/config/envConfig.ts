@@ -9,7 +9,6 @@ dotenv.config({ path: '.env' })
 const checkEnvIsExits = async () => {
   if (!fs.existsSync(path.resolve('.env'))) {
     const chalk = (await import('chalk')).default
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     console.log(chalk.red('Error: .env file not found!'))
     process.exit(1)
   }
@@ -41,10 +40,8 @@ const envConfig = plainToClass(EnvConfig, process.env, {
 validate(envConfig, { whitelist: true }).then(async (errors) => {
   if (errors.length > 0) {
     const chalk = (await import('chalk')).default
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     console.log(chalk.red('Error: .env file validation failed!'))
     errors.forEach((err) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       console.log(chalk.red(`- ${Object.values(err.constraints ?? {}).join(', ')}`))
     })
     process.exit(1)

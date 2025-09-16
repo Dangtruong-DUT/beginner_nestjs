@@ -10,6 +10,13 @@ export class CreatePostDto {
   content: string
 }
 
+export class UpdatePostDto {
+  @IsString()
+  title: string
+  @IsString()
+  content: string
+}
+
 export class GetPostDto extends PostEntity {
   @Type(() => UserEntity)
   author: UserEntity

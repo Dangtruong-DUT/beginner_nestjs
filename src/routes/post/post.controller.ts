@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { plainToInstance } from 'class-transformer'
-import { CreatePostDto, GetPostDto } from 'src/routes/post/post.dto'
+import { CreatePostDto, GetPostDto, UpdatePostDto } from 'src/routes/post/post.dto'
 import { PostService } from 'src/routes/post/post.service'
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator'
 
@@ -15,22 +15,27 @@ export class PostController {
   }
 
   @Post()
-  createPost(@Body() body: CreatePostDto, @ActiveUser('userId') userId: string) {
-    return this.postService.createPost({ body, userId })
+  async createPost(@Body() body: CreatePostDto, @ActiveUser('userId') userId: string) {
+    const post = await this.postService.createPost({ body, userId })
+    return {
+      post: plainToInstance(GetPostDto, post),
+      message: 'Tạo bài viết thành công',
+    }
   }
 
   @Get(':id')
-  getPostById(@Param('id') id: string): string {
-    return this.postService.getPostById(id)
+  getPostById(@Param('id') id: string) {
+    const post = this.postService.getPostById(id)
+    return plainToInstance(GetPostDto, post)
   }
 
   @Put(':id')
-  updatePost(@Param('id') id: string): string {
-    return this.postService.updatePost(id)
+  updatePost(@Param('id') id: string, @Body() body: UpdatePostDto, @ActiveUser('userId') userId: string) {
+    return this.postService.updatePost({ id, body, userId })
   }
 
   @Delete(':id')
-  deletePost(@Param('id') id: string): string {
+  deletePost(@Param('id') id: string): Promise<string> {
     return this.postService.deletePost(id)
   }
 }

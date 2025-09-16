@@ -1,4 +1,4 @@
-import { Prisma } from 'generated/prisma'
+import { Prisma } from '@prisma/client'
 
 export function isUniqueConstraintFailedPrismaError(error: unknown): error is Prisma.PrismaClientKnownRequestError {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002'
