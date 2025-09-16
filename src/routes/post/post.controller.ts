@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import { CreatePostDto } from 'src/routes/post/post.dto'
 import { PostService } from 'src/routes/post/post.service'
 import { AuthGuardCondition, AuthGuardType } from 'src/shared/constants/auth.constant'
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 
 @Controller('posts')
@@ -14,8 +16,8 @@ export class PostController {
   }
 
   @Post()
-  createPost(@Body() body) {
-    return this.postService.createPost(body)
+  createPost(@Body() body: CreatePostDto, @ActiveUser('userId') userId: string) {
+    return this.postService.createPost({ body, userId })
   }
 
   @Get(':id')

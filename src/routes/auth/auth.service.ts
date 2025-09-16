@@ -104,6 +104,19 @@ export class AuthService {
     }
   }
 
+  async logout(refreshToken: string) {
+    try {
+      await this.prismaService.refreshToken.delete({
+        where: { token: refreshToken },
+      })
+    } catch (error) {
+      if (isRecordNotFoundPrismaError(error)) {
+        throw new UnauthorizedException('Refresh token đã bị thu hồi')
+      }
+      throw new UnauthorizedException('Refresh token không hợp lệ')
+    }
+  }
+
   async generateTokens(userId: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.tokenService.signAccessToken({ userId }),

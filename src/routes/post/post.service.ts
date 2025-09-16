@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common'
+import { CreatePostDto } from 'src/routes/post/post.dto'
 import { PrismaService } from 'src/shared/services/prisma.service'
 
 @Injectable()
@@ -10,12 +9,12 @@ export class PostService {
     return this.prismaService.post.findMany()
   }
 
-  createPost(body: any) {
+  createPost({ body, userId }: { body: CreatePostDto; userId: string }) {
     return this.prismaService.post.create({
       data: {
         title: body.title || '',
         content: body.content || '',
-        authorId: body.authorId || 0,
+        authorId: Number(userId),
       },
     })
   }

@@ -3,8 +3,7 @@ import { plainToInstance } from 'class-transformer'
 import { LoginBodyDto, RegisterBodyDto } from 'src/routes/auth/auth.dto'
 import { AuthService } from 'src/routes/auth/auth.service'
 import { UserEntity } from 'src/routes/auth/entities/user.entity'
-import { AuthGuardCondition, AuthGuardType } from 'src/shared/constants/auth.constant'
-import { Auth, Public } from 'src/shared/decorators/auth.decorator'
+import { Public } from 'src/shared/decorators/auth.decorator'
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -32,7 +31,6 @@ export class AuthController {
     }
   }
 
-  @Auth({ AuthConditions: AuthGuardCondition.And, AuthTypes: [AuthGuardType.Bearer, AuthGuardType.ApiKey] })
   @HttpCode(HttpStatus.OK)
   @Post('refresh-token')
   async refreshToken(@Body('refreshToken') refreshToken: string) {
@@ -41,6 +39,14 @@ export class AuthController {
       accessToken,
       refreshToken: newRefreshToken,
       message: 'Làm mới token thành công',
+    }
+  }
+
+  @Post('logout')
+  async logout(@Body('refreshToken') refreshToken: string) {
+    await this.authService.logout(refreshToken)
+    return {
+      message: 'Đăng xuất thành công',
     }
   }
 }
