@@ -1,18 +1,17 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
-import { CreatePostDto } from 'src/routes/post/post.dto'
+import { plainToInstance } from 'class-transformer'
+import { CreatePostDto, GetPostDto } from 'src/routes/post/post.dto'
 import { PostService } from 'src/routes/post/post.service'
-import { AuthGuardCondition, AuthGuardType } from 'src/shared/constants/auth.constant'
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator'
-import { Auth } from 'src/shared/decorators/auth.decorator'
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Auth({ AuthConditions: AuthGuardCondition.And, AuthTypes: [AuthGuardType.ApiKey, AuthGuardType.Bearer] })
   @Get()
-  getAllPost() {
-    return this.postService.getAllPost()
+  async getAllPost(@ActiveUser('userId') userId: string) {
+    const posts = await this.postService.getAllPost(userId)
+    return posts.map((post) => plainToInstance(GetPostDto, post))
   }
 
   @Post()
